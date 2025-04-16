@@ -1,75 +1,25 @@
-import dbConnect from '@/lib/mongodb';
-import Blog from '@/models/Blog';
-import { NextApiRequest, NextApiResponse } from 'next';
+// app/api/blogs/route.ts
+import Blog from "@/models/Blog";
+import dbConnect from "@/lib/mongodb";
+import { NextRequest, NextResponse } from "next/server";
 
-import { getSession } from 'next-auth/react';
+export async function GET() {
+  try {
+    await dbConnect();
+    const blogs = await Blog.find();
+    return NextResponse.json(blogs);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const {
-    query: { id },
-    method,
-  } = req;
-
-  await dbConnect();
-
-  switch (method) {
-    case 'GET':
-      try {
-        const blog = await Blog.findById(id);
-        if (!blog) {
-          return res.status(404).json({ success: false, message: 'Blog not found' });
-        }
-        res.status(200).json({ success: true, data: blog });
-      } catch (error) {
-        res.status(400).json({ success: false, error });
-      }
-      break;
-
-    case 'PUT':
-      try {
-        // Check if user is authenticated
-        const session = await getSession({ req });
-        if (!session) {
-          return res.status(401).json({ success: false, message: 'Unauthorized' });
-        }
-        
-        const blog = await Blog.findByIdAndUpdate(id, req.body, {
-          new: true,
-          runValidators: true,
-        });
-        
-        if (!blog) {
-          return res.status(404).json({ success: false, message: 'Blog not found' });
-        }
-        
-        res.status(200).json({ success: true, data: blog });
-      } catch (error) {
-        res.status(400).json({ success: false, error });
-      }
-      break;
-
-    case 'DELETE':
-      try {
-        // Check if user is authenticated
-        const session = await getSession({ req });
-        if (!session) {
-          return res.status(401).json({ success: false, message: 'Unauthorized' });
-        }
-        
-        const deletedBlog = await Blog.deleteOne({ _id: id });
-        
-        if (!deletedBlog) {
-          return res.status(404).json({ success: false, message: 'Blog not found' });
-        }
-        
-        res.status(200).json({ success: true, data: {} });
-      } catch (error) {
-        res.status(400).json({ success: false, error });
-      }
-      break;
-
-    default:
-      res.status(400).json({ success: false, message: 'Method not allowed' });
-      break;
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    await dbConnect();
+    const blog = await Blog.create(body);
+    return NextResponse.json(blog, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
