@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { FaTachometerAlt, FaNewspaper, FaProjectDiagram, FaEnvelope, FaSignOutAlt } from 'react-icons/fa';
 import { signOut } from 'next-auth/react';
 
-const Sidebar = () => {
+const DashboardSidebar = () => {
   const router = useRouter();
 
   const isActive = (pathname: string) => {
@@ -68,4 +68,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default DashboardSidebar;
