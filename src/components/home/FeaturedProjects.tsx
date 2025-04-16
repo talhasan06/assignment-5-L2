@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { FaGithub, FaExternalLinkAlt } from 'react-icons/fa';
@@ -9,6 +11,19 @@ import { motion } from 'framer-motion';
 
 interface FeaturedProjectsProps {
   initialProjects?: IProject[];
+}
+
+interface StaticProject {
+  _id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  liveUrl: string;
+  githubUrl: string;
+  technologies: string[];
+  featured: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const containerVariants = {
@@ -33,6 +48,45 @@ const itemVariants = {
   }
 };
 
+const staticProjects: StaticProject[] = [
+  {
+    _id: '1',
+    title: 'E-commerce Platform',
+    description: 'A full-featured e-commerce platform built with Next.js, React, Node.js, and MongoDB.',
+    imageUrl: 'https://via.placeholder.com/600x400?text=E-commerce+Platform',
+    liveUrl: 'https://example.com',
+    githubUrl: 'https://github.com',
+    technologies: ['Next.js', 'React', 'Node.js', 'MongoDB', 'Stripe'],
+    featured: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    _id: '2',
+    title: 'Task Management App',
+    description: 'A task management application with drag-and-drop functionality, user authentication, and real-time updates.',
+    imageUrl: 'https://via.placeholder.com/600x400?text=Task+Management+App',
+    liveUrl: 'https://example.com',
+    githubUrl: 'https://github.com',
+    technologies: ['React', 'Firebase', 'Material-UI', 'React DnD'],
+    featured: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+  {
+    _id: '3',
+    title: 'Weather Dashboard',
+    description: 'A weather dashboard that displays current weather and forecasts for multiple locations.',
+    imageUrl: 'https://via.placeholder.com/600x400?text=Weather+Dashboard',
+    liveUrl: 'https://example.com',
+    githubUrl: 'https://github.com',
+    technologies: ['React', 'Redux', 'OpenWeather API', 'Chart.js'],
+    featured: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  },
+];
+
 const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ initialProjects = [] }) => {
   const [projects, setProjects] = useState<IProject[]>(initialProjects);
   const [loading, setLoading] = useState(initialProjects.length === 0);
@@ -56,7 +110,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ initialProjects = [
       console.error(err);
       
       // Use static projects as fallback
-      setProjects(staticProjects);
+      setProjects(staticProjects as unknown as IProject[]);
     }
   };
 
@@ -75,40 +129,6 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ initialProjects = [
       </section>
     );
   }
-
-  // Fallback to static projects if no featured projects are found
-  const staticProjects = [
-    {
-      _id: '1',
-      title: 'E-commerce Platform',
-      description: 'A full-featured e-commerce platform built with Next.js, React, Node.js, and MongoDB.',
-      imageUrl: 'https://via.placeholder.com/600x400?text=E-commerce+Platform',
-      liveUrl: 'https://example.com',
-      githubUrl: 'https://github.com',
-      technologies: ['Next.js', 'React', 'Node.js', 'MongoDB', 'Stripe'],
-      featured: true,
-    },
-    {
-      _id: '2',
-      title: 'Task Management App',
-      description: 'A task management application with drag-and-drop functionality, user authentication, and real-time updates.',
-      imageUrl: 'https://via.placeholder.com/600x400?text=Task+Management+App',
-      liveUrl: 'https://example.com',
-      githubUrl: 'https://github.com',
-      technologies: ['React', 'Firebase', 'Material-UI', 'React DnD'],
-      featured: true,
-    },
-    {
-      _id: '3',
-      title: 'Weather Dashboard',
-      description: 'A weather dashboard that displays current weather and forecasts for multiple locations.',
-      imageUrl: 'https://via.placeholder.com/600x400?text=Weather+Dashboard',
-      liveUrl: 'https://example.com',
-      githubUrl: 'https://github.com',
-      technologies: ['React', 'Redux', 'OpenWeather API', 'Chart.js'],
-      featured: true,
-    },
-  ];
 
   const displayProjects = projects.length > 0 ? projects : staticProjects;
 
@@ -132,7 +152,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ initialProjects = [
         </motion.div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayProjects.map((project, index) => (
+          {displayProjects.map((project: IProject | StaticProject, index: number) => (
             <motion.div 
               key={project._id}
               variants={itemVariants}
@@ -148,7 +168,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ initialProjects = [
                   <CardTitle className="text-gray-900 dark:text-white">{project.title}</CardTitle>
                   <CardText className="mb-4 text-gray-700 dark:text-gray-300">{project.description}</CardText>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {project.technologies.slice(0, 4).map((tech, index) => (
+                    {project.technologies.slice(0, 4).map((tech: string, index: number) => (
                       <span key={index} className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded-full text-xs text-gray-700 dark:text-gray-300">
                         {tech}
                       </span>
