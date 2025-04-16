@@ -1,73 +1,62 @@
+"use client";
+
 import { useEffect } from 'react';
-import { GetServerSideProps } from 'next';
-import { getSession, signIn, getProviders } from 'next-auth/react';
-import { useRouter } from 'next/router';
+import { signIn, getProviders } from 'next-auth/react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { FaGithub, FaGoogle } from 'react-icons/fa';
 import Layout from '@/components/layout/Layout';
 
-interface Provider {
-  id: string;
-  name: string;
-  type: string;
-  signinUrl: string;
-  callbackUrl: string;
-}
-
-interface LoginProps {
-  providers: Record<string, Provider>;
-}
-
-const Login = ({ providers }: LoginProps) => {
+const LoginPage = () => {
   const router = useRouter();
-  const { callbackUrl } = router.query;
-  
-  const handleSignIn = (providerId: string) => {
-    signIn(providerId, { callbackUrl: callbackUrl as string || '/dashboard' });
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const providers = await getProviders();
+      if (!providers) {
+        console.error('No providers configured');
+      }
+    };
+    checkSession();
+  }, []);
+
+  const handleSignIn = (provider: string) => {
+    signIn(provider, { callbackUrl });
   };
-  
+
   return (
-    <Layout
-      title="Login | Dashboard"
-      description="Login to access the dashboard and manage your portfolio content."
-    >
-      <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
-        <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold">Dashboard Login</h1>
-            <p className="text-gray-600 mt-2">Sign in to manage your portfolio content</p>
+    <Layout title="Login">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              Sign in to your account
+            </h2>
           </div>
-          
-          <div className="space-y-4">
-            {Object.values(providers).map((provider) => {
-              // Render the appropriate icon based on provider ID
-              let ProviderIcon;
-              switch (provider.id) {
-                case 'github':
-                  ProviderIcon = FaGithub;
-                  break;
-                case 'google':
-                  ProviderIcon = FaGoogle;
-                  break;
-                default:
-                  ProviderIcon = null;
-                  break;
-              }
-              
-              return (
-                <button
-                  key={provider.id}
-                  onClick={() => handleSignIn(provider.id)}
-                  className="flex items-center justify-center w-full px-4 py-3 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors"
-                >
-                  {ProviderIcon && <ProviderIcon className="mr-2" />}
-                  Sign in with {provider.name}
-                </button>
-              );
-            })}
-          </div>
-          
-          <div className="mt-8 pt-6 border-t border-gray-200 text-center text-gray-600 text-sm">
-            <p>This is a protected area. You must be logged in to access the dashboard.</p>
+          <div className="mt-8 space-y-6">
+            <div className="rounded-md shadow-sm -space-y-px">
+              <button
+                onClick={() => handleSignIn('github')}
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              >
+                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                  <FaGithub className="h-5 w-5 text-gray-300 group-hover:text-gray-200" />
+                </span>
+                Sign in with GitHub
+              </button>
+            </div>
+            <div className="rounded-md shadow-sm -space-y-px">
+              <button
+                onClick={() => handleSignIn('google')}
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                  <FaGoogle className="h-5 w-5 text-gray-300 group-hover:text-gray-200" />
+                </span>
+                Sign in with Google
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -75,23 +64,4 @@ const Login = ({ providers }: LoginProps) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
-  
-  if (session) {
-    return {
-      redirect: {
-        destination: '/dashboard',
-        permanent: false,
-      },
-    };
-  }
-  
-  const providers = await getProviders();
-  
-  return {
-    props: { providers: providers ?? {} },
-  };
-};
-
-export default Login;
+export default LoginPage;

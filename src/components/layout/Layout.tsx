@@ -1,45 +1,46 @@
+"use client";
+
 import React, { ReactNode } from 'react';
 import Head from 'next/head';
 import Header from './Header';
 import Footer from './Footer';
-import { useRouter } from 'next/router';
-import { AnimatePresence } from 'framer-motion';
+import { usePathname } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
 import PageTransition from './PageTransition';
 
-type LayoutProps = {
+interface LayoutProps {
   children: ReactNode;
   title?: string;
   description?: string;
-};
+}
 
-const Layout = ({ 
-  children, 
+const Layout = ({
+  children,
   title = 'Portfolio & Blog',
   description = 'Personal portfolio and blog website showcasing projects and thoughts'
 }: LayoutProps) => {
-  const router = useRouter();
+  const pathname = usePathname();
   
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <Head>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
-      
-      <div className="flex flex-col min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
-        <Header />
-        
-        <main className="flex-grow py-8">
-          <PageTransition key={router.route}>
-            {children}
-          </PageTransition>
-        </main>
-        
-        <Footer />
-      </div>
-    </>
+      <Header />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <main className="flex-grow">{children}</main>
+        </motion.div>
+      </AnimatePresence>
+      <Footer />
+    </div>
   );
 };
 

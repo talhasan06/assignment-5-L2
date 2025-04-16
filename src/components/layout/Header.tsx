@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import ThemeToggle from '../ui/ThemeToggle';
@@ -10,14 +10,15 @@ import ThemeToggle from '../ui/ThemeToggle';
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session } = useSession();
+  const pathname = usePathname();
   const router = useRouter();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const isActive = (pathname: string) => {
-    return router.pathname === pathname;
+  const isActive = (path: string) => {
+    return pathname === path;
   };
 
   return (
@@ -52,7 +53,7 @@ const Header = () => {
           <ThemeToggle />
           {session ? (
             <>
-              <Link href="/dashboard" className={`hover:text-blue-400 ${router.pathname.includes('/dashboard') ? 'text-blue-400' : ''}`}>
+              <Link href="/dashboard" className={`hover:text-blue-400 ${pathname.includes('/dashboard') ? 'text-blue-400' : ''}`}>
                 Dashboard
               </Link>
               <button 
@@ -109,7 +110,7 @@ const Header = () => {
               <>
                 <Link href="/dashboard" 
                   onClick={toggleMenu} 
-                  className={`hover:text-blue-400 ${router.pathname.includes('/dashboard') ? 'text-blue-400' : ''}`}
+                  className={`hover:text-blue-400 ${pathname.includes('/dashboard') ? 'text-blue-400' : ''}`}
                 >
                   Dashboard
                 </Link>

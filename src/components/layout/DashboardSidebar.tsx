@@ -1,69 +1,56 @@
-import { useRouter } from 'next/router';
+"use client";
+
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { FaTachometerAlt, FaNewspaper, FaProjectDiagram, FaEnvelope, FaSignOutAlt } from 'react-icons/fa';
 import { signOut } from 'next-auth/react';
 
 const DashboardSidebar = () => {
-  const router = useRouter();
+  const pathname = usePathname();
 
-  const isActive = (pathname: string) => {
-    return router.pathname === pathname;
+  const isActive = (path: string) => {
+    return pathname === path;
   };
 
   return (
-    <div className="h-full min-h-screen bg-gray-800 text-white w-64 py-4 px-3 hidden md:block">
-      <div className="mb-6 text-center">
-        <h2 className="text-2xl font-bold">Dashboard</h2>
-        <p className="text-gray-400 text-sm">Manage your content</p>
-      </div>
-      
-      <nav className="space-y-1">
-        <Link href="/dashboard" 
-          className={`flex items-center py-2 px-4 rounded-md ${
-            isActive('/dashboard') ? 'bg-gray-700' : 'hover:bg-gray-700'
-          }`}
+    <div className="bg-gray-800 text-white w-64 min-h-screen p-4">
+      <nav className="space-y-2">
+        <Link 
+          href="/dashboard" 
+          className={`flex items-center p-2 rounded hover:bg-gray-700 ${isActive('/dashboard') ? 'bg-gray-700' : ''}`}
         >
-          <FaTachometerAlt className="mr-3" />
-          Overview
+          <FaTachometerAlt className="mr-2" />
+          Dashboard
         </Link>
-        
-        <Link href="/dashboard/blogs" 
-          className={`flex items-center py-2 px-4 rounded-md ${
-            isActive('/dashboard/blogs') ? 'bg-gray-700' : 'hover:bg-gray-700'
-          }`}
+        <Link 
+          href="/dashboard/posts" 
+          className={`flex items-center p-2 rounded hover:bg-gray-700 ${isActive('/dashboard/posts') ? 'bg-gray-700' : ''}`}
         >
-          <FaNewspaper className="mr-3" />
-          Blog Posts
+          <FaNewspaper className="mr-2" />
+          Posts
         </Link>
-        
-        <Link href="/dashboard/projects" 
-          className={`flex items-center py-2 px-4 rounded-md ${
-            isActive('/dashboard/projects') ? 'bg-gray-700' : 'hover:bg-gray-700'
-          }`}
+        <Link 
+          href="/dashboard/projects" 
+          className={`flex items-center p-2 rounded hover:bg-gray-700 ${isActive('/dashboard/projects') ? 'bg-gray-700' : ''}`}
         >
-          <FaProjectDiagram className="mr-3" />
+          <FaProjectDiagram className="mr-2" />
           Projects
         </Link>
-        
-        <Link href="/dashboard/messages" 
-          className={`flex items-center py-2 px-4 rounded-md ${
-            isActive('/dashboard/messages') ? 'bg-gray-700' : 'hover:bg-gray-700'
-          }`}
+        <Link 
+          href="/dashboard/messages" 
+          className={`flex items-center p-2 rounded hover:bg-gray-700 ${isActive('/dashboard/messages') ? 'bg-gray-700' : ''}`}
         >
-          <FaEnvelope className="mr-3" />
+          <FaEnvelope className="mr-2" />
           Messages
         </Link>
-      </nav>
-      
-      <div className="mt-auto pt-8">
         <button 
           onClick={() => signOut()} 
-          className="flex items-center py-2 px-4 rounded-md text-red-300 hover:bg-gray-700 w-full"
+          className="flex items-center p-2 rounded hover:bg-gray-700 w-full text-left"
         >
-          <FaSignOutAlt className="mr-3" />
+          <FaSignOutAlt className="mr-2" />
           Sign Out
         </button>
-      </div>
+      </nav>
     </div>
   );
 };

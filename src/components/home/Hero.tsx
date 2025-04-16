@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { FaDownload, FaGithub, FaLinkedin } from 'react-icons/fa';
-import Button from '../ui/Button';
 import { motion } from 'framer-motion';
+import Button from '../ui/Button';
 
 const Hero = () => {
   return (
